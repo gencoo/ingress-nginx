@@ -550,9 +550,9 @@ controller:
     enabled: false
 
     service:
-      annotations: {}
-      # prometheus.io/scrape: "true"
-      # prometheus.io/port: "10254"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
 
       # clusterIP: ""
 
@@ -569,9 +569,9 @@ controller:
       # nodePort: ""
 
     serviceMonitor:
-      enabled: false
-      additionalLabels: {}
-      # The label to use to retrieve the job name from.
+      enabled: true
+      additionalLabels:
+        monitor: enabled
       # jobLabel: "app.kubernetes.io/name"
       namespace: ""
       namespaceSelector: {}
