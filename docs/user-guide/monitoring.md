@@ -14,9 +14,9 @@ This tutorial will show you how to install [Prometheus](https://prometheus.io/) 
   2. controller.podAnnotations."prometheus.io/scrape"="true"
   3. controller.podAnnotations."prometheus.io/port"="10254"
 
-  - The easiest way to configure the controller for metrics is via helm upgrade. Assuming you have installed the ingress-nginx controller as a helm release named ingresscontroller0, then you can simply type the command show below :
+  - The easiest way to configure the controller for metrics is via helm upgrade. Assuming you have installed the ingress-nginx controller as a helm release named ingress-controller, then you can simply type the command show below :
   ```
-  helm upgrade ingresscontroller0 ingress-nginx/ingress-nginx \
+  helm upgrade ingress-controller ingress-nginx/ingress-nginx \
   --namespace ingress-nginx \
   --set controller.metrics.enabled=true \
   --set-string controller.podAnnotations."prometheus\.io/scrape"="true" \
@@ -38,11 +38,38 @@ This tutorial will show you how to install [Prometheus](https://prometheus.io/) 
           prometheus.io/scrape: "true" 
   ..
   ```
+   - If you are **not using helm**, you will have to edit your manifests like this:
+     - Service manifest:
+       ```
+       apiVersion: v1
+       kind: Service
+       metadata:
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "10254"
+       ..
+       spec:
+         ports:
+           - name: prometheus
+             port: 10254
+             targetPort: prometheus
+             ..
+
+       ```
+       
+      - DaemonSet manifest:
+           ```
+           ..
+           ports:
+             - name: prometheus
+               containerPort: 10254
+             ..
+           ```
 
 
 ## Deploy and configure Prometheus Server
 
-Note that the kustomize bases used in this tutorial are stored in the [deploy](https://github.com/kubernetes/ingress-nginx/tree/master/deploy) folder of the GitHub repository [kubernetes/ingress-nginx](https://github.com/kubernetes/ingress-nginx).
+Note that the kustomize bases used in this tutorial are stored in the [deploy](https://github.com/kubernetes/ingress-nginx/tree/main/deploy) folder of the GitHub repository [kubernetes/ingress-nginx](https://github.com/kubernetes/ingress-nginx).
 
 - The Prometheus server must be configured so that it can discover endpoints of services. If a Prometheus server is already running in the cluster and if it is configured in a way that it can find the ingress controller pods, no extra configuration is needed.
 
@@ -106,7 +133,7 @@ According to the above example, this URL will be http://10.192.0.3:31086
 
   The username and password is `admin`
 
-  - After the login you can import the Grafana dashboard from [official dashboards](https://github.com/kubernetes/ingress-nginx/tree/master/deploy/grafana/dashboards), by following steps given below :
+  - After the login you can import the Grafana dashboard from [official dashboards](https://github.com/kubernetes/ingress-nginx/tree/main/deploy/grafana/dashboards), by following steps given below :
 
     - Navigate to lefthand panel of grafana
     - Hover on the gearwheel icon for Configuration and click "Data Sources"
@@ -115,7 +142,7 @@ According to the above example, this URL will be http://10.192.0.3:31086
     - Enter the details (note: I used http://CLUSTER_IP_PROMETHEUS_SVC:9090)
     - Left menu (hover over +) -> Dashboard
     - Click "Import"
-    - Enter the copy pasted json from https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
+    - Enter the copy pasted json from https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/grafana/dashboards/nginx.json
     - Click Import JSON
     - Select the Prometheus data source
     - Click "Import"

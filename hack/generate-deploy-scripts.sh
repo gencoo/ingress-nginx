@@ -135,6 +135,7 @@ controller:
   terminationGracePeriodSeconds: 0
   service:
     type: NodePort
+  watchIngressWithoutClass: true
 
   nodeSelector:
     ingress-ready: "true"
@@ -163,6 +164,8 @@ controller:
       service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
   config:
     use-proxy-protocol: "true"
+  admissionWebhooks:
+    timeoutSeconds: 29
 
 EOF
 
@@ -198,7 +201,8 @@ controller:
       service.beta.kubernetes.io/exoscale-loadbalancer-name: "nginx-ingress-controller"
       service.beta.kubernetes.io/exoscale-loadbalancer-description: "NGINX Ingress Controller load balancer"
       service.beta.kubernetes.io/exoscale-loadbalancer-service-strategy: "source-hash"
-      service.beta.kubernetes.io/exoscale-loadbalancer-service-healthcheck-mode: "tcp"
+      service.beta.kubernetes.io/exoscale-loadbalancer-service-healthcheck-mode: "http"
+      service.beta.kubernetes.io/exoscale-loadbalancer-service-healthcheck-uri: "/"
       service.beta.kubernetes.io/exoscale-loadbalancer-service-healthcheck-interval: "10s"
       service.beta.kubernetes.io/exoscale-loadbalancer-service-healthcheck-timeout: "3s"
       service.beta.kubernetes.io/exoscale-loadbalancer-service-healthcheck-retries: "1"
